@@ -14,7 +14,7 @@ import pickle
 
 st.title("Insurance Premium")
 
-url = r"https://raw.githubusercontent.com/mhcode001/HW2_GA/main/housing.csv"
+url = r"https://raw.githubusercontent.com/mhcode001/GA_HW3_App/main/housing.csv"
 
 num_rows = st.sidebar.number_input('Select Number of Rows to Load', 
                                   min_value =50, 
@@ -44,11 +44,9 @@ df = load_data(num_rows)
 
 if section == 'Data Explorer':
     
-    x_axis = st.sidebar.selectbox("Choose column for X-axis",
-                                  df.select_dtypes(include = np.object).columns.tolist())
+    x_axis = st.sidebar.selectbox("Choose column for X-axis",['sex','age','smoker'])
     
-    y_axis = st.sidebar.selectbox("Choose column for y-axis",['visitors',
-                                                              'reserve_visitors'])
+    y_axis = st.sidebar.selectbox("Choose column for y-axis",['charges','bmi'])
   
     chart_type = st.sidebar.selectbox("Choose Your Chart Type",
                                        ['line','bar','area'])
