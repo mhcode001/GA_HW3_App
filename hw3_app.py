@@ -10,15 +10,16 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
+import altair as alt
 import pickle 
 
 st.title("Insurance Premium")
 
-url = r"https://raw.githubusercontent.com/mhcode001/GA_HW3_App/main/housing.csv"
+url = r"https://raw.githubusercontent.com/mhcode001/GA_HW3_App/main/insurance_premiums.csv"
 
 num_rows = st.sidebar.number_input('Select Number of Rows to Load', 
-                                  min_value =50, 
-                                  max_value = 2000, 
+                                  min_value = 50, 
+                                  max_value = 1500, 
                                   step = 50)
 
 section = st.sidebar.radio('Choose Application Section', ['Data Explorer', 
@@ -44,12 +45,14 @@ df = load_data(num_rows)
 
 if section == 'Data Explorer':
     
-    x_axis = st.sidebar.selectbox("Choose column for X-axis",['sex','age','smoker'])
+    x_axis = st.sidebar.selectbox("Choose column for X-axis",['age','sex','smoker'])
     
     y_axis = st.sidebar.selectbox("Choose column for y-axis",['charges','bmi'])
   
     chart_type = st.sidebar.selectbox("Choose Your Chart Type",
                                        ['line','bar','area'])
+     
+    
     # st.line_chart(grouping)
     
     if chart_type == 'line':
@@ -70,26 +73,26 @@ else:
     st.text("Choose Options to the Side to Explore the Model")
     model = load_model()
 
-    id_val = st.sidebar.selectbox("Choose Restaurant Id",
-                                  df['id'].unique().tolist())
-    yesterday = st.sidebar.number_input("How many visitors yesterday", min_value = 0,
-                                max_value = 100, step =1, value =20)
-    day_of_week = st.sidebar.selectbox("Day of Week",
-                                df['day_of_week'].unique().tolist())
+    sex = st.sidebar.radio('Choose Sex', ['female', 'male'])
+
+    smoker = st.sidebar.radio('Smoker', ['yes', 'no'])
+
+    age = st.sidebar.selectbox("Choose Age",
+                                  df['age'].unique().tolist())
+  #  region = st.sidebar.selectbox("Region",
+  #                              df['region'].unique().tolist())
     
     sample = {
-    'id': id_val,
-    'yesterday': yesterday,
-    'day_of_week': day_of_week
+    'sex': sex,
+    'smoker': smoker,
+    'age': age,
+#    'region': region
     }
 
 
     sample = pd.DataFrame(sample, index = [0])
     prediction = model.predict(sample)[0]
     
-    st.title(f"Predicted Attendance: {int(prediction)}")
+    st.title(f"Predicted Insurance Premium: {float(prediction)}")
     
-#st.write(df)
-
-#print(num_rows)
 
