@@ -10,7 +10,6 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
-import altair as alt
 import pickle 
 
 st.title("Insurance Premium")
@@ -18,9 +17,9 @@ st.title("Insurance Premium")
 url = r"https://raw.githubusercontent.com/mhcode001/GA_HW3_App/main/insurance_premiums.csv"
 
 num_rows = st.sidebar.number_input('Select Number of Rows to Load', 
-                                  min_value = 50, 
+                                  min_value = 500, 
                                   max_value = 1500, 
-                                  step = 50)
+                                  step = 100)
 
 section = st.sidebar.radio('Choose Application Section', ['Data Explorer', 
                                                           'Model Explorer'])
@@ -45,15 +44,12 @@ df = load_data(num_rows)
 
 if section == 'Data Explorer':
     
-    x_axis = st.sidebar.selectbox("Choose column for X-axis",['age','sex','smoker'])
+    x_axis = st.sidebar.selectbox("Choose column for X-axis",['age','sex','children', 'smoker', 'region'])
     
-    y_axis = st.sidebar.selectbox("Choose column for y-axis",['charges','bmi'])
-  
-    chart_type = st.sidebar.selectbox("Choose Your Chart Type",
-                                       ['line','bar','area'])
+    y_axis = st.sidebar.selectbox("Choose column for y-axis",['charges'])
+   
+    chart_type = st.sidebar.selectbox("Choose Your Chart Type",['line','bar','area'])
      
-    
-    # st.line_chart(grouping)
     
     if chart_type == 'line':
         grouping = create_grouping(x_axis, y_axis)
@@ -62,37 +58,42 @@ if section == 'Data Explorer':
     elif chart_type == 'bar':
         grouping = create_grouping(x_axis, y_axis)
         st.bar_chart(grouping)
-        
+                
     elif chart_type == 'area':
         fig = px.strip(df[[x_axis, y_axis]], x=x_axis, y=y_axis)
-        st.plotly_chart(fig)
+        st.plotly_chart(fig)    
         
     st.write(df)
     
 else:
     st.text("Choose Options to the Side to Explore the Model")
+
     model = load_model()
 
     sex = st.sidebar.radio('Choose Sex', ['female', 'male'])
 
     smoker = st.sidebar.radio('Smoker', ['yes', 'no'])
 
-    age = st.sidebar.selectbox("Choose Age",
-                                  df['age'].unique().tolist())
-  #  region = st.sidebar.selectbox("Region",
-  #                              df['region'].unique().tolist())
+    age = st.sidebar.slider("Age")
+
+    bmi = st.sidebar.slider("Select BMI", 0.0, 100.0)
+    
+    children = st.sidebar.number_input('Number of Children',0)
+    
+    region = st.sidebar.selectbox("Region", df['region'].unique().tolist())    
     
     sample = {
     'sex': sex,
     'smoker': smoker,
     'age': age,
-#    'region': region
+    'region': region,
+    'bmi':bmi,
+    'children': children
     }
-
 
     sample = pd.DataFrame(sample, index = [0])
     prediction = model.predict(sample)[0]
     
-    st.title(f"Predicted Insurance Premium: {float(prediction)}")
+    st.title(f"Predicted Insurance Premium: ${int(prediction)}")
     
 
